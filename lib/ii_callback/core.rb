@@ -31,14 +31,14 @@ module IICallback
     end
 
     def call
-      send(@context.method)
+      send(@context.method) if respond_to?(@context.method)
     end
 
     class_methods do
       ActiveRecord::Callbacks::CALLBACKS.each do |callback|
         class_eval <<-RUBY, __FILE__, __LINE__
           def #{callback}(record)
-            self.new(record: record, method: __method__).call_all if method_defined?(:#{callback}, true)
+            self.new(record: record, method: __method__).call_all
           end
         RUBY
       end
